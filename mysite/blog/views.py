@@ -6,6 +6,25 @@ from .forms import EmailPostForm, CommentForm
 from django.core.mail import send_mail
 import os
 from django.views.decorators.http import require_POST
+from taggit.models import Tag
+
+
+def post_list(request, tag_slug=None):
+    post_list = Post.published.all()
+    tag = None
+    if tag_slug:
+        tag = get_object_or_404(Tag, slug=tag_slug)
+        post_list = post_list.filter(tags__in=[tag])
+    # Pagination with 3 posts per page
+    paginator = Paginator(post_list, 3)
+    page_number = request.GET.get('page', 1)
+    try:
+        posts = paginator.page(page_number)
+    except PageNotAnInteger:
+        posts = paginator.page(1)
+    except EmptyPage:
+        posts = paginator.page(paginator.num_pages)
+    return render(request, "blog/post/list.html", {"posts": posts, "tag": tag})
 
 
 class PostListView(ListView):
@@ -84,17 +103,3 @@ def post_comment(request, post_id):
             "comment": comment
         }
     )
-
-
-# def post_list(request):
-#     post_list = Post.published.all()
-#     # Pagination with 3 posts per page
-#     paginator = Paginator(post_list, 3)
-#     page_number = request.GET.get('page', 1)
-#     try:
-#         posts = paginator.page(page_number)
-#     except PageNotAnInteger:
-#         posts = paginator.page(1)
-#     except EmptyPage:
-#         posts = paginator.page(paginator.num_pages)
-#     return render(request, "blog/post/list.html", {"posts": posts})
