@@ -45,6 +45,8 @@ INSTALLED_APPS = [
     "taggit",
     "mysite",
     "mysite.blog",
+    "django.contrib.sites",
+    "django.contrib.sitemaps",
 ]
 
 MIDDLEWARE = [
@@ -137,3 +139,7 @@ EMAIL_HOST_USER = os.getenv("GMAIL_USER")
 EMAIL_HOST_PASSWORD = os.getenv("GMAIL_PASSWORD")
 EMAIL_PORT = 587
 EMAIL_USE_TLS = True
+
+# Sitemap settings
+
+SITE_ID = 1
